@@ -5,6 +5,11 @@
   "author": "pjb0811",
   "license": "MIT",
   "repository": "pjb0811/react-motion-window",
+  "keywords": [
+    "react",
+    "react-motion",
+    "window"
+  ],
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
