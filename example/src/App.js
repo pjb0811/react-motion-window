@@ -1,13 +1,37 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import ExampleComponent from 'react-motion-window'
+import Window from 'react-motion-window';
 
 export default class App extends Component {
-  render () {
+  render() {
     return (
       <div>
-        <ExampleComponent text='Modern React component module' />
+        <div>
+          <button
+            onClick={() => {
+              this.window.addWindow();
+            }}
+          >
+            add window
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={() => {
+              this.window.removeWindow();
+            }}
+          >
+            remove window
+          </button>
+        </div>
+        <Window
+          ref={window => (this.window = window)}
+          width={200}
+          height={200}
+          position="top"
+          direction="top"
+        />
       </div>
-    )
+    );
   }
 }

@@ -1,0 +1,9 @@
+.window-wrapper {
+  position: fixed;
+  z-index: 9999;
+}
+
+.window-wrapper .window {
+  position: relative;
+  border: 1px solid;
+}
