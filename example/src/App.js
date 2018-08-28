@@ -30,7 +30,9 @@ export default class App extends Component {
           height={200}
           position="top"
           direction="top"
-        />
+        >
+          test
+        </Window>
       </div>
     );
   }

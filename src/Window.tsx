@@ -1,6 +1,14 @@
 import * as React from 'react';
 import { TransitionMotion, spring } from 'react-motion';
-import './window.css';
+import css from './window.css';
+
+type Props = {
+  width: number;
+  height: number;
+  position: string;
+  direction: string;
+  children: React.ReactChild;
+};
 
 const POSITIONS = {
   top: {
@@ -34,7 +42,7 @@ const POSITIONS = {
   // }
 };
 
-class Window extends React.Component {
+class Window extends React.Component<Props> {
   state = {
     cells: [],
     directions: {
@@ -75,20 +83,20 @@ class Window extends React.Component {
     });
   };
 
-  willEnter = cell => {
+  willEnter = (_: any) => {
+    console.log(this.state.directions);
     return { top: 200 };
   };
 
-  willLeave = cell => {
+  willLeave = (_: any) => {
     const { height } = this.props;
     return { top: spring(height) };
   };
 
   render() {
-    console.log(this.state);
-    const { width, height, position } = this.props;
+    const { width, height, position, children } = this.props;
     const { cells } = this.state;
-    const styles = cells.map((cell, i) => {
+    const styles = cells.map((cell: { top: number }, i) => {
       const { top } = cell;
       return {
         key: `${i}`,
@@ -104,7 +112,7 @@ class Window extends React.Component {
       >
         {styles => (
           <div
-            className="window-wrapper"
+            className={css.windowWrapper}
             style={{
               ...POSITIONS[position],
               width,
@@ -114,7 +122,7 @@ class Window extends React.Component {
             {styles.map(cell => {
               return (
                 <div
-                  className="window"
+                  className={css.window}
                   key={cell.key}
                   style={{
                     ...cell.style,
@@ -122,7 +130,7 @@ class Window extends React.Component {
                     height
                   }}
                 >
-                  test
+                  {children}
                 </div>
               );
             })}
