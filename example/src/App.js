@@ -31,7 +31,15 @@ export default class App extends Component {
           position="top"
           direction="top"
         >
-          test
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              border: '1px solid'
+            }}
+          >
+            test
+          </div>
         </Window>
       </div>
     );

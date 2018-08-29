@@ -124,7 +124,7 @@ class Window extends React.Component<Props> {
         {cells => (
           <div
             ref={wrapper => (this.wrapper = wrapper)}
-            className={`${styles.windowWrapper} ${position}`}
+            className={`${styles.windowWrapper} ${styles[position]}`}
             style={{
               width,
               height
