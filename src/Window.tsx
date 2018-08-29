@@ -1,79 +1,84 @@
 import * as React from 'react';
 import { TransitionMotion, spring } from 'react-motion';
-import css from './window.css';
+import styles from './window.css';
 
 type Props = {
   width: number;
   height: number;
   position: string;
   direction: string;
-  children: React.ReactChild;
-};
-
-const POSITIONS = {
-  top: {
-    top: 0,
-    left: 0,
-    right: 0,
-    margin: '0 auto'
-  },
-  left: {
-    left: 0
-  },
-  right: {
-    right: 0
-  },
-  center: {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    margin: 'auto'
-  },
-  bottom: {
-    left: 0,
-    right: 0,
-    bottom: 0,
-    margin: '0 auto'
-  }
-  // 'bottom-right': {
-  //   bottom: 0,
-  //   right: 0
-  // }
 };
 
 class Window extends React.Component<Props> {
   state = {
-    cells: [],
-    directions: {
-      top: 'auto',
-      left: 'auto',
-      right: 'auto',
-      bottom: 'auto'
-    }
+    width: 0,
+    height: 0,
+    direction: 'center',
+    position: '',
+    cell: {
+      top: 0,
+      left: 0
+    },
+    cells: []
+  };
+
+  wrapper: any = {};
+
+  getPosition = () => {
+    const { width, height, position, direction } = this.props;
+    const { innerHeight, innerWidth } = window;
+    const { offsetLeft, offsetTop } = this.wrapper;
+
+    const top =
+      direction === 'top'
+        ? innerHeight - offsetTop
+        : direction === 'bottom'
+          ? -offsetTop - height
+          : 0;
+
+    const left =
+      direction === 'left'
+        ? position.includes('left')
+          ? innerWidth
+          : position.includes('right')
+            ? width
+            : offsetLeft + width
+        : direction === 'right'
+          ? position.includes('left')
+            ? -width
+            : -offsetLeft - width
+          : 0;
+
+    return {
+      top,
+      left
+    };
   };
 
   componentDidMount() {
     const { width, height, position, direction } = this.props;
-    const { directions } = this.state;
+    const { top, left } = this.getPosition();
 
     this.setState({
       width,
       height,
       position,
       direction,
-      directions: {
-        top: direction === 'top' ? window.innerHeight : directions.top,
-        left: direction === 'left' ? -width : directions.left,
-        right: direction === 'right' ? -width : directions.right,
-        bottom: direction === 'bottom' ? -height : directions.bottom
+      cell: {
+        top,
+        left
       }
     });
   }
 
   addWindow = () => {
     this.setState({
-      cells: [{ top: 0 }]
+      cells: [
+        {
+          top: 0,
+          left: 0
+        }
+      ]
     });
   };
 
@@ -83,46 +88,52 @@ class Window extends React.Component<Props> {
     });
   };
 
-  willEnter = (_: any) => {
-    console.log(this.state.directions);
-    return { top: 200 };
+  willEnter = () => {
+    return { ...this.state.cell };
   };
 
-  willLeave = (_: any) => {
-    const { height } = this.props;
-    return { top: spring(height) };
+  willLeave = () => {
+    const { cell } = this.state;
+
+    return {
+      top: spring(cell.top),
+      left: spring(cell.left)
+    };
   };
 
   render() {
     const { width, height, position, children } = this.props;
-    const { cells } = this.state;
-    const styles = cells.map((cell: { top: number }, i) => {
-      const { top } = cell;
-      return {
-        key: `${i}`,
-        style: { top: spring(top) }
-      };
-    });
 
     return (
       <TransitionMotion
         willEnter={this.willEnter}
         willLeave={this.willLeave}
-        styles={styles}
+        styles={this.state.cells.map(
+          (cell: { top: number; left: number }, i) => {
+            const { top, left } = cell;
+            return {
+              key: `${i}`,
+              style: {
+                top: spring(top),
+                left: spring(left)
+              }
+            };
+          }
+        )}
       >
-        {styles => (
+        {cells => (
           <div
-            className={css.windowWrapper}
+            ref={wrapper => (this.wrapper = wrapper)}
+            className={`${styles.windowWrapper} ${position}`}
             style={{
-              ...POSITIONS[position],
               width,
               height
             }}
           >
-            {styles.map(cell => {
+            {cells.map(cell => {
               return (
                 <div
-                  className={css.window}
+                  className={styles.window}
                   key={cell.key}
                   style={{
                     ...cell.style,

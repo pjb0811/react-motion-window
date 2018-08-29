@@ -3,7 +3,36 @@
   z-index: 9999;
 }
 
+.window-wrapper.top {
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+}
+
+.window-wrapper.left {
+  left: 0;
+}
+
+.window-wrapper.right {
+  right: 0;
+}
+
+.window-wrapper.center {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.window-wrapper.bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0 auto;
+}
+
 .window-wrapper .window {
-  position: relative;
-  border: 1px solid;
+  position: absolute;
 }
