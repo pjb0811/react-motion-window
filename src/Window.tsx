@@ -1,33 +1,39 @@
-import * as React from 'react';
-import { TransitionMotion, spring } from 'react-motion';
-import styles from './window.css';
+import { Motion, TransitionMotion, spring } from 'react-motion';
+import './window.css';
+import React, { Component, Fragment } from 'react';
+import TitleBar from './TitleBar';
+import Contents from './Contents';
 
-type Props = {
-  width: number;
-  height: number;
-  position: string;
-  direction: string;
-};
-
-class Window extends React.Component<Props> {
+class Window extends Component {
   state = {
     width: 0,
     height: 0,
-    direction: 'center',
-    position: '',
+    wrapper: {
+      isFull: false,
+      show: false,
+      width: 0,
+      height: 0
+    },
     cell: {
       top: 0,
       left: 0
     },
-    cells: []
+    cells: [],
+    titlebar: {
+      use: false,
+      title: '',
+      height: 20
+    },
+    mouseXY: [0, 0],
+    mouseDelta: [0, 0],
+    isMoved: false,
+    isPressed: false
   };
-
-  wrapper: any = {};
 
   getPosition = () => {
     const { width, height, position, direction } = this.props;
     const { innerHeight, innerWidth } = window;
-    const { offsetLeft, offsetTop } = this.wrapper;
+    const { offsetLeft, offsetTop } = this.wrapperContext;
 
     const top =
       direction === 'top'
@@ -56,29 +62,68 @@ class Window extends React.Component<Props> {
   };
 
   componentDidMount() {
-    const { width, height, position, direction } = this.props;
-    const { top, left } = this.getPosition();
+    const { width, height, titlebar } = this.props;
+    // const { top, left } = this.getPosition();
 
-    this.setState({
-      width,
-      height,
-      position,
-      direction,
-      cell: {
-        top,
-        left
-      }
+    window.addEventListener('mousemove', this.handleMouseMove);
+    window.addEventListener('mouseup', this.handleMouseUp);
+
+    this.setState(prevState => {
+      return {
+        width,
+        height,
+        wrapper: {
+          ...prevState.wrapper,
+          width,
+          height
+        },
+        // cell: {
+        //   top,
+        //   left
+        // },
+        titlebar: {
+          ...prevState.titlebar,
+          ...titlebar
+        }
+      };
     });
   }
 
   addWindow = () => {
+    this.setState(prevState => {
+      return {
+        wrapper: {
+          ...prevState.wrapper,
+          show: true
+        },
+        cell: this.getPosition(),
+        cells: [
+          {
+            top: 0,
+            left: 0
+          }
+        ]
+      };
+    });
+  };
+
+  toggleWindowSize = () => {
+    const { innerWidth, innerHeight } = window;
+    const { width, height, wrapper, cells } = this.state;
+
     this.setState({
-      cells: [
-        {
+      wrapper: {
+        ...wrapper,
+        isFull: !wrapper.isFull,
+        width: wrapper.isFull ? width : innerWidth,
+        height: wrapper.isFull ? height : innerHeight
+      },
+      cells: cells.map(cell => {
+        return {
           top: 0,
           left: 0
-        }
-      ]
+        };
+      })
     });
   };
 
@@ -101,53 +146,147 @@ class Window extends React.Component<Props> {
     };
   };
 
+  didLeave = () => {
+    this.setState(prevState => {
+      return {
+        wrapper: {
+          ...prevState.wrapper,
+          show: false
+        }
+      };
+    });
+  };
+
+  handleMouseDown = e => {
+    const { pageX, pageY } = e;
+
+    this.setState({
+      isPressed: true,
+      isMoved: false,
+      mouseDelta: [pageX, pageY],
+      mouseXY: [pageX, pageY]
+    });
+  };
+
+  handleMouseMove = e => {
+    const { pageX, pageY } = e;
+    const {
+      isPressed,
+      mouseXY: [mx, my]
+    } = this.state;
+
+    if (isPressed) {
+      this.setState({
+        mouseXY: [pageX, pageY],
+        mouseDelta: [pageX - mx, pageY - my],
+        isMoved: true
+      });
+      this.dragWindow();
+    }
+  };
+
+  dragWindow = () => {
+    const { mouseDelta, cells } = this.state;
+    const [dx, dy] = mouseDelta;
+
+    let newCells = cells.concat();
+
+    newCells = newCells.map(cell => {
+      return {
+        top: cell.top + dy,
+        left: cell.left + dx
+      };
+    });
+
+    this.setState({
+      cells: newCells
+    });
+  };
+
+  handleMouseUp = () => {
+    const { isPressed } = this.state;
+
+    if (isPressed) {
+      this.setState({
+        isPressed: false
+      });
+    }
+  };
+
   render() {
-    const { width, height, position, children } = this.props;
+    const { position, children, transparent } = this.props;
+    const { titlebar, wrapper } = this.state;
 
     return (
-      <TransitionMotion
-        willEnter={this.willEnter}
-        willLeave={this.willLeave}
-        styles={this.state.cells.map(
-          (cell: { top: number; left: number }, i) => {
-            const { top, left } = cell;
-            return {
-              key: `${i}`,
-              style: {
-                top: spring(top),
-                left: spring(left)
-              }
-            };
-          }
-        )}
+      <Motion
+        style={{
+          width: spring(wrapper.width),
+          height: spring(wrapper.height)
+        }}
       >
-        {cells => (
-          <div
-            ref={wrapper => (this.wrapper = wrapper)}
-            className={`${styles.windowWrapper} ${styles[position]}`}
-            style={{
-              width,
-              height
-            }}
-          >
-            {cells.map(cell => {
-              return (
-                <div
-                  className={styles.window}
-                  key={cell.key}
-                  style={{
-                    ...cell.style,
-                    width,
-                    height
-                  }}
-                >
-                  {children}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </TransitionMotion>
+        {({ width, height }) => {
+          return (
+            <div
+              ref={context => (this.wrapperContext = context)}
+              className={`window-wrapper ${position}`}
+              style={{
+                width,
+                height,
+                visibility: wrapper.show ? 'visible' : 'hidden'
+              }}
+            >
+              <TransitionMotion
+                willEnter={this.willEnter}
+                willLeave={this.willLeave}
+                didLeave={this.didLeave}
+                styles={this.state.cells.map((cell, i) => {
+                  const { top, left } = cell;
+                  return {
+                    key: `${i}`,
+                    style: {
+                      top: spring(top),
+                      left: spring(left)
+                    }
+                  };
+                })}
+              >
+                {cells => (
+                  <Fragment>
+                    {cells.map(cell => {
+                      return (
+                        <div
+                          className="window"
+                          key={cell.key}
+                          style={{
+                            ...cell.style,
+                            width,
+                            height
+                          }}
+                        >
+                          <TitleBar
+                            transparent={transparent}
+                            titlebar={titlebar}
+                            width={width}
+                            toggleWindowSize={this.toggleWindowSize}
+                            handleMouseDown={this.handleMouseDown}
+                            removeWindow={this.removeWindow}
+                          />
+                          <Contents
+                            transparent={transparent}
+                            width={width}
+                            height={height}
+                            children={children}
+                          />
+                        </div>
+                      );
+                    })}
+                  </Fragment>
+                )}
+              </TransitionMotion>
+            </div>
+          );
+        }}
+      </Motion>
     );
   }
 }
