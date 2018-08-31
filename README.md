@@ -12,7 +12,7 @@ npm install --save react-motion-window
 
 ## Usage
 
-[demo](https://codesandbox.io/s/wq3o056j98)
+[demo](https://codesandbox.io/s/4r0327jmrw)
 
 ```tsx
 import * as React from 'react';
