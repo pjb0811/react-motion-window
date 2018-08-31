@@ -3,7 +3,6 @@ import * as React from 'react';
 import TitleBar from './TitleBar';
 import Contents from './Contents';
 import styles from './window.css';
-import 'semantic-ui-css/semantic.min.css';
 
 type Props = {
   width: number;
