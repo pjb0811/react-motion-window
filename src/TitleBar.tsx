@@ -1,7 +1,19 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { Header, Segment, Icon } from 'semantic-ui-react';
 
-class TitleBar extends Component {
+type Props = {
+  transparent: boolean;
+  titlebar: {
+    use: boolean;
+    title: string;
+  };
+  width: number;
+  toggleWindowSize: () => void;
+  handleMouseDown: (e: React.MouseEvent<any>) => void;
+  removeWindow: () => void;
+};
+
+class TitleBar extends React.Component<Props> {
   render() {
     const {
       transparent,

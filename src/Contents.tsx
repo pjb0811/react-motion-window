@@ -1,7 +1,14 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { Segment } from 'semantic-ui-react';
 
-class Contents extends Component {
+type Props = {
+  transparent: boolean;
+  width: number;
+  height: number;
+  children: React.ReactNode;
+};
+
+class Contents extends React.Component<Props> {
   render() {
     const { transparent, width, height, children } = this.props;
     if (transparent) {

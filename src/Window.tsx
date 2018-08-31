@@ -1,10 +1,45 @@
 import { Motion, TransitionMotion, spring } from 'react-motion';
-import './window.css';
-import React, { Component, Fragment } from 'react';
+import * as React from 'react';
 import TitleBar from './TitleBar';
 import Contents from './Contents';
+import styles from './window.css';
+import 'semantic-ui-css/semantic.min.css?global';
 
-class Window extends Component {
+type Props = {
+  width: number;
+  height: number;
+  position: string;
+  direction: string;
+  transparent: boolean;
+  titlebar: {};
+};
+
+type State = {
+  width: number;
+  height: number;
+  wrapper: {
+    isFull: boolean;
+    show: boolean;
+    width: number;
+    height: number;
+  };
+  cell: {
+    top: number;
+    left: number;
+  };
+  cells: Array<{ top: number; left: number }>;
+  titlebar: {
+    use: boolean;
+    title: string;
+    height: number;
+  };
+  mouseXY: Array<number>;
+  mouseDelta: Array<number>;
+  isMoved: boolean;
+  isPressed: boolean;
+};
+
+class Window extends React.Component<Props, State> {
   state = {
     width: 0,
     height: 0,
@@ -29,6 +64,8 @@ class Window extends Component {
     isMoved: false,
     isPressed: false
   };
+
+  wrapperContext: HTMLDivElement | any;
 
   getPosition = () => {
     const { width, height, position, direction } = this.props;
@@ -63,7 +100,6 @@ class Window extends Component {
 
   componentDidMount() {
     const { width, height, titlebar } = this.props;
-    // const { top, left } = this.getPosition();
 
     window.addEventListener('mousemove', this.handleMouseMove);
     window.addEventListener('mouseup', this.handleMouseUp);
@@ -77,10 +113,6 @@ class Window extends Component {
           width,
           height
         },
-        // cell: {
-        //   top,
-        //   left
-        // },
         titlebar: {
           ...prevState.titlebar,
           ...titlebar
@@ -118,7 +150,7 @@ class Window extends Component {
         width: wrapper.isFull ? width : innerWidth,
         height: wrapper.isFull ? height : innerHeight
       },
-      cells: cells.map(cell => {
+      cells: cells.map(_ => {
         return {
           top: 0,
           left: 0
@@ -128,7 +160,15 @@ class Window extends Component {
   };
 
   removeWindow = () => {
+    const { width, height, wrapper } = this.state;
+
     this.setState({
+      wrapper: {
+        ...wrapper,
+        isFull: false,
+        width,
+        height
+      },
       cells: []
     });
   };
@@ -157,7 +197,7 @@ class Window extends Component {
     });
   };
 
-  handleMouseDown = e => {
+  handleMouseDown = (e: React.MouseEvent<any>) => {
     const { pageX, pageY } = e;
 
     this.setState({
@@ -168,7 +208,7 @@ class Window extends Component {
     });
   };
 
-  handleMouseMove = e => {
+  handleMouseMove = (e: any) => {
     const { pageX, pageY } = e;
     const {
       isPressed,
@@ -189,9 +229,9 @@ class Window extends Component {
     const { mouseDelta, cells } = this.state;
     const [dx, dy] = mouseDelta;
 
-    let newCells = cells.concat();
+    let newCells: Array<{ top: number; left: number }> = cells.concat();
 
-    newCells = newCells.map(cell => {
+    newCells = newCells.map((cell: { top: number; left: number }) => {
       return {
         top: cell.top + dy,
         left: cell.left + dx
@@ -228,7 +268,7 @@ class Window extends Component {
           return (
             <div
               ref={context => (this.wrapperContext = context)}
-              className={`window-wrapper ${position}`}
+              className={`${styles.windowWrapper} ${styles[position]}`}
               style={{
                 width,
                 height,
@@ -239,23 +279,25 @@ class Window extends Component {
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
                 didLeave={this.didLeave}
-                styles={this.state.cells.map((cell, i) => {
-                  const { top, left } = cell;
-                  return {
-                    key: `${i}`,
-                    style: {
-                      top: spring(top),
-                      left: spring(left)
-                    }
-                  };
-                })}
+                styles={this.state.cells.map(
+                  (cell: { top: number; left: number }, i) => {
+                    const { top, left } = cell;
+                    return {
+                      key: `${i}`,
+                      style: {
+                        top: spring(top),
+                        left: spring(left)
+                      }
+                    };
+                  }
+                )}
               >
                 {cells => (
-                  <Fragment>
+                  <React.Fragment>
                     {cells.map(cell => {
                       return (
                         <div
-                          className="window"
+                          className={styles.window}
                           key={cell.key}
                           style={{
                             ...cell.style,
@@ -280,7 +322,7 @@ class Window extends Component {
                         </div>
                       );
                     })}
-                  </Fragment>
+                  </React.Fragment>
                 )}
               </TransitionMotion>
             </div>
