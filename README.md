@@ -12,16 +12,50 @@ npm install --save react-motion-window
 
 ## Usage
 
+[demo](https://codesandbox.io/s/wq3o056j98)
+
 ```tsx
-import * as React from 'react'
+import * as React from 'react';
 
-import MyComponent from 'react-motion-window'
+import Window from 'react-motion-window';
 
-class Example extends React.Component {
-  render () {
+export default class App extends Component {
+  render() {
     return (
-      <MyComponent />
-    )
+      <div>
+        <div>
+          <button
+            onClick={() => {
+              this.window.addWindow();
+            }}
+          >
+            add window
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={() => {
+              this.window.removeWindow();
+            }}
+          >
+            remove window
+          </button>
+        </div>
+        <Window
+          ref={window => (this.window = window)}
+          width={200}
+          height={200}
+          position="center"
+          direction="top"
+          titlebar={{
+            use: true,
+            title: 'test'
+          }}
+        >
+          test
+        </Window>
+      </div>
+    );
   }
 }
 ```
