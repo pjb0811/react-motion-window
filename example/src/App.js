@@ -28,21 +28,14 @@ export default class App extends Component {
           ref={window => (this.window = window)}
           width={200}
           height={200}
-          position="center"
-          direction="top"
+          position="top"
+          direction="bottom"
           titlebar={{
             use: true,
             title: 'test'
           }}
         >
-          <div
-            style={{
-              background: 'white',
-              border: '1px solid'
-            }}
-          >
-            test
-          </div>
+          test
         </Window>
       </div>
     );

@@ -1,21 +1,25 @@
 .window-wrapper {
   position: fixed;
   z-index: 9999;
+  margin: auto;
 }
 
 .window-wrapper.top {
   top: 0;
   left: 0;
   right: 0;
-  margin: 0 auto;
 }
 
 .window-wrapper.left {
+  top: 0;
   left: 0;
+  bottom: 0;
 }
 
 .window-wrapper.right {
+  top: 0;
   right: 0;
+  bottom: 0;
 }
 
 .window-wrapper.center {
@@ -23,14 +27,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  margin: auto;
 }
 
 .window-wrapper.bottom {
   left: 0;
   right: 0;
   bottom: 0;
-  margin: 0 auto;
 }
 
 .window-wrapper .window {
