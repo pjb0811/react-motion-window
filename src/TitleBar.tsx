@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { Header, Segment, Icon } from 'semantic-ui-react';
+import styles from './window.css';
 
 type Props = {
   transparent: boolean;
   titlebar: {
     use: boolean;
     title: string;
+    component: React.ComponentType<any> | null;
   };
   width: number;
   toggleWindowSize: () => void;
@@ -28,31 +29,23 @@ class TitleBar extends React.Component<Props> {
       return null;
     }
 
+    if (titlebar.component) {
+      return <titlebar.component {...this.props} />;
+    }
+
     return (
-      <Segment
-        attached="top"
+      <div
+        className={styles.titlebar}
         style={{
-          width,
-          boxSizing: 'border-box'
+          width
         }}
-        clearing
-        onDoubleClick={toggleWindowSize}
-        onMouseDown={handleMouseDown}
       >
-        <Header
-          as="h4"
-          floated="left"
-          style={{
-            margin: 0
-          }}
-        >
+        <h4 onDoubleClick={toggleWindowSize} onMouseDown={handleMouseDown}>
           {titlebar.title}
-        </Header>
-        <Header as="h6" floated="right">
-          <Icon link name="square" color="green" onClick={toggleWindowSize} />
-          <Icon link name="close" color="red" onClick={removeWindow} />
-        </Header>
-      </Segment>
+        </h4>
+        <button className={styles.resize} onClick={toggleWindowSize} />
+        <button className={styles.close} onClick={removeWindow} />
+      </div>
     );
   }
 }

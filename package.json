@@ -1,6 +1,6 @@
 {
   "name": "react-motion-window",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "window app using react & react-motion",
   "author": "pjb0811",
   "license": "MIT",
@@ -28,9 +28,7 @@
   },
   "dependencies": {
     "@types/react-motion": "^0.0.27",
-    "react-motion": "^0.5.2",
-    "semantic-ui-css": "^2.3.3",
-    "semantic-ui-react": "^0.82.3"
+    "react-motion": "^0.5.2"
   },
   "peerDependencies": {
     "prop-types": "^15.5.4",

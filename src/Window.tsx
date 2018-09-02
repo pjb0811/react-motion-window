@@ -30,7 +30,7 @@ type State = {
   titlebar: {
     use: boolean;
     title: string;
-    height: number;
+    component: React.ComponentType<any> | null;
   };
   mouseXY: Array<number>;
   mouseDelta: Array<number>;
@@ -56,7 +56,7 @@ class Window extends React.Component<Props, State> {
     titlebar: {
       use: false,
       title: '',
-      height: 20
+      component: null
     },
     mouseXY: [0, 0],
     mouseDelta: [0, 0],
@@ -205,6 +205,8 @@ class Window extends React.Component<Props, State> {
       mouseDelta: [pageX, pageY],
       mouseXY: [pageX, pageY]
     });
+
+    e.preventDefault();
   };
 
   handleMouseMove = (e: any) => {
@@ -313,7 +315,6 @@ class Window extends React.Component<Props, State> {
                             removeWindow={this.removeWindow}
                           />
                           <Contents
-                            transparent={transparent}
                             width={width}
                             height={height}
                             children={children}

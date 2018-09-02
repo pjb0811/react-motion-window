@@ -6,5 +6,8 @@ declare namespace window {
 	const center: string
 	const bottom: string
 	const window: string
+	const titlebar: string
+	const resize: string
+	const close: string
 }
 export default window

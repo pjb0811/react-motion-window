@@ -35,7 +35,14 @@ export default class App extends Component {
             title: 'test'
           }}
         >
-          test
+          <div
+            style={{
+              background: 'white',
+              border: '1px solid'
+            }}
+          >
+            test
+          </div>
         </Window>
       </div>
     );

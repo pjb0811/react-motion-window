@@ -36,3 +36,29 @@
 .window-wrapper .window {
   position: absolute;
 }
+
+.window-wrapper .titlebar {
+  background: whitesmoke;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.window-wrapper .titlebar h4 {
+  flex-grow: 1;
+  margin: 0;
+}
+
+.window-wrapper .titlebar button {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+}
+
+.window-wrapper .titlebar button.resize {
+  background: green;
+}
+
+.window-wrapper .titlebar button.close {
+  background: red;
+}
