@@ -31,6 +31,7 @@ type State = {
     use: boolean;
     title: string;
     component: React.ComponentType<any> | null;
+    height: number;
   };
   mouseXY: Array<number>;
   mouseDelta: Array<number>;
@@ -56,7 +57,8 @@ class Window extends React.Component<Props, State> {
     titlebar: {
       use: false,
       title: '',
-      component: null
+      component: null,
+      height: 30
     },
     mouseXY: [0, 0],
     mouseDelta: [0, 0],
@@ -315,6 +317,7 @@ class Window extends React.Component<Props, State> {
                             removeWindow={this.removeWindow}
                           />
                           <Contents
+                            titlebar={titlebar}
                             width={width}
                             height={height}
                             children={children}

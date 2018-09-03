@@ -32,10 +32,20 @@ export default class App extends Component {
           direction="bottom"
           titlebar={{
             use: true,
-            title: 'test'
+            title: 'test',
+            height: 30
           }}
         >
-          test
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              border: '1px solid',
+              boxSizing: 'border-box'
+            }}
+          >
+            test
+          </div>
         </Window>
       </div>
     );

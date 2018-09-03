@@ -7,6 +7,7 @@ type Props = {
     use: boolean;
     title: string;
     component: React.ComponentType<any> | null;
+    height: number;
   };
   width: number;
   toggleWindowSize: () => void;
@@ -37,7 +38,8 @@ class TitleBar extends React.Component<Props> {
       <div
         className={styles.titlebar}
         style={{
-          width
+          width,
+          height: titlebar.height
         }}
       >
         <h4 onDoubleClick={toggleWindowSize} onMouseDown={handleMouseDown}>
