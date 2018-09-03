@@ -4,6 +4,9 @@ import styles from './window.css';
 type Props = {
   width: number;
   height: number;
+  resizableMouseDown: (e: React.MouseEvent<any>) => void;
+  resizableMouseMove: () => void;
+  resizableMouseUp: () => void;
 };
 
 class Resizable extends React.Component<Props> {

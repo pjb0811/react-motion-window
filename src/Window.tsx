@@ -141,6 +141,12 @@ class Window extends React.Component<Props, State> {
     });
   };
 
+  resizableMouseDown = () => {};
+
+  resizableMouseMove = () => {};
+
+  resizableMouseUp = () => {};
+
   toggleWindowSize = () => {
     const { innerWidth, innerHeight } = window;
     const { width, height, wrapper, cells } = this.state;
@@ -279,7 +285,13 @@ class Window extends React.Component<Props, State> {
                 visibility: wrapper.show ? 'visible' : 'hidden'
               }}
             >
-              <Resizable width={width} height={height} />
+              <Resizable
+                width={width}
+                height={height}
+                resizableMouseDown={this.resizableMouseDown}
+                resizableMouseMove={this.resizableMouseMove}
+                resizableMouseUp={this.resizableMouseUp}
+              />
               <TransitionMotion
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
