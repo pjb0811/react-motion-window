@@ -39,6 +39,31 @@
   position: absolute;
 }
 
+.window-wrapper .resizable {
+  position: relative;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.window-wrapper .resizable .ns {
+  cursor: ns-resize;
+}
+
+.window-wrapper .resizable .ew {
+  cursor: ew-resize;
+}
+
+.window-wrapper .resizable .nwse {
+  cursor: nwse-resize;
+}
+
+.window-wrapper .resizable .nesw {
+  cursor: nesw-resize;
+}
+
 .window-wrapper .titlebar {
   background: whitesmoke;
   display: flex;

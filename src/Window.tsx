@@ -1,5 +1,6 @@
 import { Motion, TransitionMotion, spring } from 'react-motion';
 import * as React from 'react';
+import Resizable from './Resizable';
 import TitleBar from './TitleBar';
 import Contents from './Contents';
 import styles from './window.css';
@@ -278,6 +279,7 @@ class Window extends React.Component<Props, State> {
                 visibility: wrapper.show ? 'visible' : 'hidden'
               }}
             >
+              <Resizable width={width} height={height} />
               <TransitionMotion
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
