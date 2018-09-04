@@ -4,8 +4,11 @@ import styles from './window.css';
 type Props = {
   width: number;
   height: number;
-  resizableMouseDown: (e: React.MouseEvent<any>) => void;
-  resizableMouseMove: () => void;
+  cells: Array<{ top: number; left: number }>;
+  resizableMouseDown: (
+    params: { e: React.MouseEvent<any>; type: string }
+  ) => void;
+  resizableMouseMove: (e: any) => void;
   resizableMouseUp: () => void;
 };
 
@@ -14,8 +17,16 @@ class Resizable extends React.Component<Props> {
     size: 10
   };
 
+  componentDidMount() {
+    const { resizableMouseMove, resizableMouseUp } = this.props;
+    window.addEventListener('mousemove', resizableMouseMove);
+    window.addEventListener('mouseup', resizableMouseUp);
+  }
+
   render() {
-    const { width, height } = this.props;
+    const { width, height, cells, resizableMouseDown } = this.props;
+    const [cell = { top: 0, left: 0 }] = cells;
+    const { top, left } = cell;
     const { size } = this.state;
 
     return (
@@ -24,8 +35,8 @@ class Resizable extends React.Component<Props> {
         style={{
           width: width + size,
           height: height + size,
-          top: -size / 2,
-          left: -size / 2
+          top: top + -size / 2,
+          left: left + -size / 2
         }}
       >
         <li
@@ -34,12 +45,18 @@ class Resizable extends React.Component<Props> {
             width: size / 2,
             height: size / 2
           }}
+          onMouseDown={e => {
+            resizableMouseDown({ e, type: 'left-top' });
+          }}
         />
         <li
           className={styles.ns}
           style={{
             width,
             height: size / 2
+          }}
+          onMouseDown={e => {
+            resizableMouseDown({ e, type: 'top' });
           }}
         />
         <li
@@ -48,12 +65,18 @@ class Resizable extends React.Component<Props> {
             width: size / 2,
             height: size / 2
           }}
+          onMouseDown={e => {
+            resizableMouseDown({ e, type: 'right-top' });
+          }}
         />
         <li
           className={styles.ew}
           style={{
             width: size / 2,
             height
+          }}
+          onMouseDown={e => {
+            resizableMouseDown({ e, type: 'left' });
           }}
         />
         <li
@@ -67,6 +90,9 @@ class Resizable extends React.Component<Props> {
           style={{
             width: size / 2,
             height
+          }}
+          onMouseDown={e => {
+            resizableMouseDown({ e, type: 'right' });
           }}
         />
         <li
@@ -75,12 +101,18 @@ class Resizable extends React.Component<Props> {
             width: size / 2,
             height: size / 2
           }}
+          onMouseDown={e => {
+            resizableMouseDown({ e, type: 'left-bottom' });
+          }}
         />
         <li
           className={styles.ns}
           style={{
             width,
             height: size / 2
+          }}
+          onMouseDown={e => {
+            resizableMouseDown({ e, type: 'bottom' });
           }}
         />
         <li
@@ -88,6 +120,9 @@ class Resizable extends React.Component<Props> {
           style={{
             width: size / 2,
             height: size / 2
+          }}
+          onMouseDown={e => {
+            resizableMouseDown({ e, type: 'right-bottom' });
           }}
         />
       </ul>

@@ -1,4 +1,4 @@
-import { Motion, TransitionMotion, spring } from 'react-motion';
+import { Motion, TransitionMotion, spring, presets } from 'react-motion';
 import * as React from 'react';
 import Resizable from './Resizable';
 import TitleBar from './TitleBar';
@@ -22,6 +22,10 @@ type State = {
     show: boolean;
     width: number;
     height: number;
+    mouseXY: Array<number>;
+    mouseDelta: Array<number>;
+    isMoved: boolean;
+    isPressed: boolean;
   };
   cell: {
     top: number;
@@ -34,10 +38,13 @@ type State = {
     component: React.ComponentType<any> | null;
     height: number;
   };
-  mouseXY: Array<number>;
-  mouseDelta: Array<number>;
-  isMoved: boolean;
-  isPressed: boolean;
+  resizable: {
+    type: string;
+    mouseXY: Array<number>;
+    mouseDelta: Array<number>;
+    isMoved: boolean;
+    isPressed: boolean;
+  };
 };
 
 class Window extends React.Component<Props, State> {
@@ -48,7 +55,11 @@ class Window extends React.Component<Props, State> {
       isFull: false,
       show: false,
       width: 0,
-      height: 0
+      height: 0,
+      isMoved: false,
+      isPressed: false,
+      mouseXY: [0, 0],
+      mouseDelta: [0, 0]
     },
     cell: {
       top: 0,
@@ -61,10 +72,13 @@ class Window extends React.Component<Props, State> {
       component: null,
       height: 30
     },
-    mouseXY: [0, 0],
-    mouseDelta: [0, 0],
-    isMoved: false,
-    isPressed: false
+    resizable: {
+      type: 'nwse',
+      isMoved: false,
+      isPressed: false,
+      mouseXY: [0, 0],
+      mouseDelta: [0, 0]
+    }
   };
 
   wrapperContext: HTMLDivElement | any;
@@ -141,12 +155,6 @@ class Window extends React.Component<Props, State> {
     });
   };
 
-  resizableMouseDown = () => {};
-
-  resizableMouseMove = () => {};
-
-  resizableMouseUp = () => {};
-
   toggleWindowSize = () => {
     const { innerWidth, innerHeight } = window;
     const { width, height, wrapper, cells } = this.state;
@@ -207,12 +215,16 @@ class Window extends React.Component<Props, State> {
 
   handleMouseDown = (e: React.MouseEvent<any>) => {
     const { pageX, pageY } = e;
+    const { wrapper } = this.state;
 
     this.setState({
-      isPressed: true,
-      isMoved: false,
-      mouseDelta: [pageX, pageY],
-      mouseXY: [pageX, pageY]
+      wrapper: {
+        ...wrapper,
+        isPressed: true,
+        isMoved: false,
+        mouseDelta: [pageX, pageY],
+        mouseXY: [pageX, pageY]
+      }
     });
 
     e.preventDefault();
@@ -220,24 +232,28 @@ class Window extends React.Component<Props, State> {
 
   handleMouseMove = (e: any) => {
     const { pageX, pageY } = e;
+    const { wrapper } = this.state;
     const {
       isPressed,
       mouseXY: [mx, my]
-    } = this.state;
+    } = wrapper;
 
     if (isPressed) {
       this.setState({
-        mouseXY: [pageX, pageY],
-        mouseDelta: [pageX - mx, pageY - my],
-        isMoved: true
+        wrapper: {
+          ...wrapper,
+          mouseXY: [pageX, pageY],
+          mouseDelta: [pageX - mx, pageY - my],
+          isMoved: true
+        }
       });
       this.dragWindow();
     }
   };
 
   dragWindow = () => {
-    const { mouseDelta, cells } = this.state;
-    const [dx, dy] = mouseDelta;
+    const { wrapper, cells } = this.state;
+    const [dx, dy] = wrapper.mouseDelta;
 
     let newCells: Array<{ top: number; left: number }> = cells.concat();
 
@@ -254,11 +270,126 @@ class Window extends React.Component<Props, State> {
   };
 
   handleMouseUp = () => {
-    const { isPressed } = this.state;
+    const { wrapper } = this.state;
+    const { isPressed } = wrapper;
 
     if (isPressed) {
       this.setState({
-        isPressed: false
+        wrapper: {
+          ...wrapper,
+          isPressed: false
+        }
+      });
+    }
+  };
+
+  resizableMouseDown = (params: { e: React.MouseEvent<any>; type: string }) => {
+    const { e, type } = params;
+    const { pageX, pageY } = e;
+
+    this.setState({
+      resizable: {
+        type,
+        isPressed: true,
+        isMoved: false,
+        mouseDelta: [pageX, pageY],
+        mouseXY: [pageX, pageY]
+      }
+    });
+
+    e.preventDefault();
+  };
+
+  resizableMouseMove = (e: any) => {
+    const { pageX, pageY } = e;
+    const { resizable } = this.state;
+    const {
+      isPressed,
+      mouseXY: [mx, my]
+    } = resizable;
+
+    if (isPressed) {
+      this.setState({
+        resizable: {
+          ...resizable,
+          mouseXY: [pageX, pageY],
+          mouseDelta: [pageX - mx, pageY - my],
+          isMoved: true
+        }
+      });
+
+      this.resizableWindow();
+    }
+  };
+
+  resizableWindow = () => {
+    const { wrapper, resizable } = this.state;
+    const { width, height } = wrapper;
+    const { type, mouseDelta } = resizable;
+    const [dx, dy] = mouseDelta;
+
+    let resizeWidth, resizeHeight;
+
+    switch (type) {
+      case 'top':
+        resizeWidth = width;
+        resizeHeight = height - dy;
+        break;
+      case 'right-top':
+        resizeWidth = width + dx;
+        resizeHeight = height - dy;
+        break;
+
+      case 'left':
+        resizeWidth = width - dx;
+        resizeHeight = height;
+        break;
+
+      case 'right':
+        resizeWidth = width + dx;
+        resizeHeight = height;
+        break;
+
+      case 'left-bottom':
+        resizeWidth = width - dx;
+        resizeHeight = height + dy;
+        break;
+
+      case 'bottom':
+        resizeWidth = width;
+        resizeHeight = height + dy;
+        break;
+
+      case 'right-bottom':
+        resizeWidth = width + dx;
+        resizeHeight = height + dy;
+        break;
+
+      default:
+        resizeWidth = width - dx;
+        resizeHeight = height - dy;
+        break;
+    }
+
+    this.setState({
+      wrapper: {
+        ...wrapper,
+        width: resizeWidth,
+        height: resizeHeight
+      }
+    });
+  };
+
+  resizableMouseUp = () => {
+    const { resizable } = this.state;
+    const { isPressed } = resizable;
+
+    if (isPressed) {
+      this.setState({
+        resizable: {
+          ...resizable,
+          isPressed: false
+        }
       });
     }
   };
@@ -270,8 +401,8 @@ class Window extends React.Component<Props, State> {
     return (
       <Motion
         style={{
-          width: spring(wrapper.width),
-          height: spring(wrapper.height)
+          width: spring(wrapper.width, presets.stiff),
+          height: spring(wrapper.height, presets.stiff)
         }}
       >
         {({ width, height }) => {
@@ -288,6 +419,7 @@ class Window extends React.Component<Props, State> {
               <Resizable
                 width={width}
                 height={height}
+                cells={this.state.cells}
                 resizableMouseDown={this.resizableMouseDown}
                 resizableMouseMove={this.resizableMouseMove}
                 resizableMouseUp={this.resizableMouseUp}
