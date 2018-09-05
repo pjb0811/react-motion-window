@@ -1,4 +1,4 @@
-import { Motion, TransitionMotion, spring, presets } from 'react-motion';
+import { Motion, TransitionMotion, spring } from 'react-motion';
 import * as React from 'react';
 import Resizable from './Resizable';
 import TitleBar from './TitleBar';
@@ -44,6 +44,8 @@ type State = {
     mouseDelta: Array<number>;
     isMoved: boolean;
     isPressed: boolean;
+    shiftXY: Array<number>;
+    position: { top: number; left: number };
   };
 };
 
@@ -73,11 +75,13 @@ class Window extends React.Component<Props, State> {
       height: 30
     },
     resizable: {
-      type: 'nwse',
+      type: 'top',
       isMoved: false,
       isPressed: false,
       mouseXY: [0, 0],
-      mouseDelta: [0, 0]
+      mouseDelta: [0, 0],
+      shiftXY: [0, 0],
+      position: { top: 0, left: 0 }
     }
   };
 
@@ -283,20 +287,25 @@ class Window extends React.Component<Props, State> {
     }
   };
 
-  resizableMouseDown = (params: { e: React.MouseEvent<any>; type: string }) => {
+  resizableMouseDown = (params: { e: any; type: string }) => {
     const { e, type } = params;
-    const { pageX, pageY } = e;
+    const { resizable } = this.state;
+    const { pageX, pageY, target } = e;
 
     this.setState({
       resizable: {
+        ...resizable,
         type,
         isPressed: true,
         isMoved: false,
+        shiftXY: [
+          target.getBoundingClientRect().left - resizable.position.left,
+          target.getBoundingClientRect().top - resizable.position.top
+        ],
         mouseDelta: [pageX, pageY],
         mouseXY: [pageX, pageY]
       }
     });
-
     e.preventDefault();
   };
 
@@ -323,19 +332,28 @@ class Window extends React.Component<Props, State> {
   };
 
   resizableWindow = () => {
-    const { wrapper, resizable } = this.state;
-    const { width, height } = wrapper;
-    const { type, mouseDelta } = resizable;
-    const [dx, dy] = mouseDelta;
+    const { resizable } = this.state;
+    const { shiftXY, mouseXY } = resizable;
+    const [mx, my] = mouseXY;
+    const [sx, sy] = shiftXY;
 
-    let resizeWidth, resizeHeight;
+    this.setState({
+      resizable: {
+        ...resizable,
+        position: {
+          top: my - sy,
+          left: mx - sx
+        }
+      }
+    });
+    /*
 
     switch (type) {
       case 'top':
         resizeWidth = width;
         resizeHeight = height - dy;
         break;
-      case 'right-top':
+      case 'rightTop':
         resizeWidth = width + dx;
         resizeHeight = height - dy;
         break;
@@ -350,7 +368,7 @@ class Window extends React.Component<Props, State> {
         resizeHeight = height;
         break;
 
-      case 'left-bottom':
+      case 'leftBottom':
         resizeWidth = width - dx;
         resizeHeight = height + dy;
         break;
@@ -360,7 +378,7 @@ class Window extends React.Component<Props, State> {
         resizeHeight = height + dy;
         break;
 
-      case 'right-bottom':
+      case 'rightBottom':
         resizeWidth = width + dx;
         resizeHeight = height + dy;
         break;
@@ -371,13 +389,21 @@ class Window extends React.Component<Props, State> {
         break;
     }
 
+    newCells = newCells.map(_ => {
+      return {
+        top: resizeTop,
+        left: resizeLeft
+      };
+    });
+
     this.setState({
       wrapper: {
         ...wrapper,
         width: resizeWidth,
         height: resizeHeight
-      }
-    });
+      },
+      cells: newCells
+    }); */
   };
 
   resizableMouseUp = () => {
@@ -396,16 +422,17 @@ class Window extends React.Component<Props, State> {
 
   render() {
     const { position, children, transparent } = this.props;
-    const { titlebar, wrapper } = this.state;
+    const { titlebar, wrapper, resizable } = this.state;
 
     return (
       <Motion
         style={{
-          width: spring(wrapper.width, presets.stiff),
-          height: spring(wrapper.height, presets.stiff)
+          translateY: spring(resizable.position.top),
+          width: spring(wrapper.width),
+          height: spring(wrapper.height)
         }}
       >
-        {({ width, height }) => {
+        {({ translateY, width, height }) => {
           return (
             <div
               ref={context => (this.wrapperContext = context)}
@@ -417,9 +444,10 @@ class Window extends React.Component<Props, State> {
               }}
             >
               <Resizable
-                width={width}
-                height={height}
+                width={wrapper.width}
+                height={wrapper.height}
                 cells={this.state.cells}
+                resizable={resizable}
                 resizableMouseDown={this.resizableMouseDown}
                 resizableMouseMove={this.resizableMouseMove}
                 resizableMouseUp={this.resizableMouseUp}
@@ -449,7 +477,9 @@ class Window extends React.Component<Props, State> {
                           className={styles.window}
                           key={cell.key}
                           style={{
-                            ...cell.style,
+                            top: cell.style.top,
+                            left: cell.style.left,
+                            transform: `translate3d(0px, ${translateY}px, 0)`,
                             width,
                             height
                           }}

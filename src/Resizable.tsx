@@ -5,6 +5,15 @@ type Props = {
   width: number;
   height: number;
   cells: Array<{ top: number; left: number }>;
+  resizable: {
+    type: string;
+    mouseXY: Array<number>;
+    mouseDelta: Array<number>;
+    isMoved: boolean;
+    isPressed: boolean;
+    shiftXY: Array<number>;
+    position: { top: number; left: number };
+  };
   resizableMouseDown: (
     params: { e: React.MouseEvent<any>; type: string }
   ) => void;
@@ -24,7 +33,8 @@ class Resizable extends React.Component<Props> {
   }
 
   render() {
-    const { width, height, cells, resizableMouseDown } = this.props;
+    const { width, height, cells, resizable, resizableMouseDown } = this.props;
+    const { position } = resizable;
     const [cell = { top: 0, left: 0 }] = cells;
     const { top, left } = cell;
     const { size } = this.state;
@@ -33,10 +43,10 @@ class Resizable extends React.Component<Props> {
       <ul
         className={styles.resizable}
         style={{
-          width: width + size,
-          height: height + size,
-          top: top + -size / 2,
-          left: left + -size / 2
+          width: width + size - position.left,
+          height: height + size - position.top,
+          top: top + position.top + -size / 2,
+          left: left + position.left + -size / 2
         }}
       >
         <li
@@ -73,7 +83,7 @@ class Resizable extends React.Component<Props> {
           className={styles.ew}
           style={{
             width: size / 2,
-            height
+            height: height - position.top
           }}
           onMouseDown={e => {
             resizableMouseDown({ e, type: 'left' });
@@ -82,14 +92,14 @@ class Resizable extends React.Component<Props> {
         <li
           style={{
             width,
-            height
+            height: height - position.top
           }}
         />
         <li
           className={styles.ew}
           style={{
             width: size / 2,
-            height
+            height: height - position.top
           }}
           onMouseDown={e => {
             resizableMouseDown({ e, type: 'right' });
