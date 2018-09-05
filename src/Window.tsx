@@ -45,7 +45,7 @@ type State = {
     isMoved: boolean;
     isPressed: boolean;
     shiftXY: Array<number>;
-    position: { top: number; left: number };
+    position: { top: number; left: number; right: number; bottom: number };
   };
 };
 
@@ -81,7 +81,7 @@ class Window extends React.Component<Props, State> {
       mouseXY: [0, 0],
       mouseDelta: [0, 0],
       shiftXY: [0, 0],
-      position: { top: 0, left: 0 }
+      position: { top: 0, left: 0, right: 0, bottom: 0 }
     }
   };
 
@@ -316,17 +316,13 @@ class Window extends React.Component<Props, State> {
   resizableMouseMove = (e: any) => {
     const { pageX, pageY } = e;
     const { resizable } = this.state;
-    const {
-      isPressed
-      // mouseXY: [mx, my]
-    } = resizable;
+    const { isPressed } = resizable;
 
     if (isPressed) {
       this.setState({
         resizable: {
           ...resizable,
           mouseXY: [pageX, pageY],
-          // mouseDelta: [pageX - mx, pageY - my],
           isMoved: true
         }
       });
@@ -337,40 +333,50 @@ class Window extends React.Component<Props, State> {
 
   resizableWindow = () => {
     const { resizable } = this.state;
-    const { shiftXY, mouseXY, mouseDelta, type } = resizable;
+    const { shiftXY, mouseXY, mouseDelta, type, position } = resizable;
     const [mx, my] = mouseXY;
     const [sx, sy] = shiftXY;
     const [dx, dy] = mouseDelta;
 
-    let resizeTop = my - sy - dy;
-    let resizeLeft = mx - sx - dx;
+    let resizeTop = position.top;
+    let resizeLeft = position.left;
+    let resizeRight = position.right;
+    let resizeBottom = position.bottom;
 
     switch (type) {
       case 'top':
-        // resizeTop = resizeTop = my - sy > 0 ? 0 : my - sy;
-        // resizeLeft = 0;
+        resizeTop = my - sy - dy;
         break;
       case 'rightTop':
+        resizeRight = mx - sx - dx;
+        resizeTop = my - sy - dy;
         break;
 
       case 'left':
-        // resizeTop = 0;
-        // resizeLeft = mx - sx > 0 ? 0 : mx - sx;
+        resizeLeft = mx - sx - dx;
         break;
 
       case 'right':
+        resizeRight = mx - sx - dx;
         break;
 
       case 'leftBottom':
+        resizeLeft = mx - sx - dx;
+        resizeBottom = my - sy - dy;
         break;
 
       case 'bottom':
+        resizeBottom = my - sy - dy;
         break;
 
       case 'rightBottom':
+        resizeRight = mx - sx - dx;
+        resizeBottom = my - sy - dy;
         break;
 
       default:
+        resizeTop = my - sy - dy;
+        resizeLeft = mx - sx - dx;
         break;
     }
 
@@ -379,7 +385,9 @@ class Window extends React.Component<Props, State> {
         ...resizable,
         position: {
           top: resizeTop,
-          left: resizeLeft
+          left: resizeLeft,
+          right: resizeRight,
+          bottom: resizeBottom
         }
       }
     });
@@ -408,8 +416,8 @@ class Window extends React.Component<Props, State> {
         style={{
           left: spring(wrapper.isFull ? 0 : resizable.position.left),
           top: spring(wrapper.isFull ? 0 : resizable.position.top),
-          width: spring(wrapper.width),
-          height: spring(wrapper.height)
+          width: spring(wrapper.width + resizable.position.right),
+          height: spring(wrapper.height + resizable.position.bottom)
         }}
       >
         {({ top, left, width, height }) => {
@@ -418,8 +426,8 @@ class Window extends React.Component<Props, State> {
               ref={context => (this.wrapperContext = context)}
               className={`${styles.windowWrapper} ${styles[position]}`}
               style={{
-                width,
-                height,
+                width: wrapper.width,
+                height: wrapper.height,
                 visibility: wrapper.show ? 'visible' : 'hidden'
               }}
             >
@@ -457,8 +465,8 @@ class Window extends React.Component<Props, State> {
                           className={styles.window}
                           key={cell.key}
                           style={{
-                            ...cell.style,
-                            transform: `translate3d(${left}px, ${top}px, 0)`,
+                            top: cell.style.top + top,
+                            left: cell.style.left + left,
                             width: width - left,
                             height: height - top
                           }}

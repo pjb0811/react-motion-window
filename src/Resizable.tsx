@@ -12,7 +12,7 @@ type Props = {
     isMoved: boolean;
     isPressed: boolean;
     shiftXY: Array<number>;
-    position: { top: number; left: number };
+    position: { top: number; left: number; right: number; bottom: number };
   };
   resizableMouseDown: (
     params: { e: React.MouseEvent<any>; type: string }
@@ -43,8 +43,8 @@ class Resizable extends React.Component<Props> {
       <ul
         className={styles.resizable}
         style={{
-          width: width + size - position.left,
-          height: height + size - position.top,
+          width: width + size - position.left + position.right,
+          height: height + size - position.top + position.bottom,
           top: top + position.top + -size / 2,
           left: left + position.left + -size / 2
         }}
@@ -62,7 +62,7 @@ class Resizable extends React.Component<Props> {
         <li
           className={styles.ns}
           style={{
-            width: width - position.left,
+            width: width - position.left + position.right,
             height: size / 2
           }}
           onMouseDown={e => {
@@ -83,7 +83,7 @@ class Resizable extends React.Component<Props> {
           className={styles.ew}
           style={{
             width: size / 2,
-            height: height - position.top
+            height: height - position.top + position.bottom
           }}
           onMouseDown={e => {
             resizableMouseDown({ e, type: 'left' });
@@ -91,15 +91,15 @@ class Resizable extends React.Component<Props> {
         />
         <li
           style={{
-            width: width - position.left,
-            height: height - position.top
+            width: width - position.left + position.right,
+            height: height - position.top + position.bottom
           }}
         />
         <li
           className={styles.ew}
           style={{
             width: size / 2,
-            height: height - position.top
+            height: height - position.top + position.bottom
           }}
           onMouseDown={e => {
             resizableMouseDown({ e, type: 'right' });
@@ -118,7 +118,7 @@ class Resizable extends React.Component<Props> {
         <li
           className={styles.ns}
           style={{
-            width,
+            width: width - position.left + position.right,
             height: size / 2
           }}
           onMouseDown={e => {
@@ -132,7 +132,7 @@ class Resizable extends React.Component<Props> {
             height: size / 2
           }}
           onMouseDown={e => {
-            resizableMouseDown({ e, type: 'right-bottom' });
+            resizableMouseDown({ e, type: 'rightBottom' });
           }}
         />
       </ul>
