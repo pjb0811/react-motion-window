@@ -35,6 +35,7 @@ export default class App extends Component {
             title: 'test',
             height: 30
           }}
+          resize={true}
         >
           <div
             style={{

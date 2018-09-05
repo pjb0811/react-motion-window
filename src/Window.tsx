@@ -11,6 +11,7 @@ type Props = {
   position: string;
   direction: string;
   transparent: boolean;
+  resize: boolean;
   titlebar: {};
 };
 
@@ -408,7 +409,7 @@ class Window extends React.Component<Props, State> {
   };
 
   render() {
-    const { position, children, transparent } = this.props;
+    const { position, children, transparent, resize = false } = this.props;
     const { titlebar, wrapper, resizable } = this.state;
 
     return (
@@ -431,15 +432,17 @@ class Window extends React.Component<Props, State> {
                 visibility: wrapper.show ? 'visible' : 'hidden'
               }}
             >
-              <Resizable
-                width={wrapper.width}
-                height={wrapper.height}
-                cells={this.state.cells}
-                resizable={resizable}
-                resizableMouseDown={this.resizableMouseDown}
-                resizableMouseMove={this.resizableMouseMove}
-                resizableMouseUp={this.resizableMouseUp}
-              />
+              {resize && (
+                <Resizable
+                  width={wrapper.width}
+                  height={wrapper.height}
+                  cells={this.state.cells}
+                  resizable={resizable}
+                  resizableMouseDown={this.resizableMouseDown}
+                  resizableMouseMove={this.resizableMouseMove}
+                  resizableMouseUp={this.resizableMouseUp}
+                />
+              )}
               <TransitionMotion
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
