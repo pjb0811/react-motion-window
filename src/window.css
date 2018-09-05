@@ -48,11 +48,6 @@
   flex-wrap: wrap;
 }
 
-.window-wrapper .resizable li {
-  border: 1px solid;
-  box-sizing: border-box;
-}
-
 .window-wrapper .resizable .ns {
   cursor: ns-resize;
 }
