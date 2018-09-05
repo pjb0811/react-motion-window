@@ -383,64 +383,6 @@ class Window extends React.Component<Props, State> {
         }
       }
     });
-    /*
-
-    switch (type) {
-      case 'top':
-        resizeWidth = width;
-        resizeHeight = height - dy;
-        break;
-      case 'rightTop':
-        resizeWidth = width + dx;
-        resizeHeight = height - dy;
-        break;
-
-      case 'left':
-        resizeWidth = width - dx;
-        resizeHeight = height;
-        break;
-
-      case 'right':
-        resizeWidth = width + dx;
-        resizeHeight = height;
-        break;
-
-      case 'leftBottom':
-        resizeWidth = width - dx;
-        resizeHeight = height + dy;
-        break;
-
-      case 'bottom':
-        resizeWidth = width;
-        resizeHeight = height + dy;
-        break;
-
-      case 'rightBottom':
-        resizeWidth = width + dx;
-        resizeHeight = height + dy;
-        break;
-
-      default:
-        resizeWidth = width - dx;
-        resizeHeight = height - dy;
-        break;
-    }
-
-    newCells = newCells.map(_ => {
-      return {
-        top: resizeTop,
-        left: resizeLeft
-      };
-    });
-
-    this.setState({
-      wrapper: {
-        ...wrapper,
-        width: resizeWidth,
-        height: resizeHeight
-      },
-      cells: newCells
-    }); */
   };
 
   resizableMouseUp = () => {
@@ -464,13 +406,13 @@ class Window extends React.Component<Props, State> {
     return (
       <Motion
         style={{
-          translateX: spring(resizable.position.left),
-          translateY: spring(resizable.position.top),
+          left: spring(wrapper.isFull ? 0 : resizable.position.left),
+          top: spring(wrapper.isFull ? 0 : resizable.position.top),
           width: spring(wrapper.width),
           height: spring(wrapper.height)
         }}
       >
-        {({ width, height }) => {
+        {({ top, left, width, height }) => {
           return (
             <div
               ref={context => (this.wrapperContext = context)}
@@ -516,23 +458,23 @@ class Window extends React.Component<Props, State> {
                           key={cell.key}
                           style={{
                             ...cell.style,
-                            // transform: `translate3d(${translateX}px, ${translateY}px, 0)`,
-                            width,
-                            height
+                            transform: `translate3d(${left}px, ${top}px, 0)`,
+                            width: width - left,
+                            height: height - top
                           }}
                         >
                           <TitleBar
                             transparent={transparent}
                             titlebar={titlebar}
-                            width={width}
+                            width={width - left}
                             toggleWindowSize={this.toggleWindowSize}
                             handleMouseDown={this.handleMouseDown}
                             removeWindow={this.removeWindow}
                           />
                           <Contents
                             titlebar={titlebar}
-                            width={width}
-                            height={height}
+                            width={width - left}
+                            height={height - top}
                             children={children}
                           />
                         </div>
