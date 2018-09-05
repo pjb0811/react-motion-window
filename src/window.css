@@ -37,7 +37,6 @@
 
 .window-wrapper .window {
   position: absolute;
-  border: 1px solid red;
 }
 
 .window-wrapper .resizable {
@@ -47,12 +46,6 @@
   margin: 0;
   display: flex;
   flex-wrap: wrap;
-  border: 1px solid;
-}
-
-.window-wrapper .resizable li {
-  border: 1px solid green;
-  box-sizing: border-box;
 }
 
 .window-wrapper .resizable .ns {
