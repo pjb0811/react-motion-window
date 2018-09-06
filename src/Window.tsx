@@ -183,7 +183,7 @@ class Window extends React.Component<Props, State> {
   };
 
   removeWindow = () => {
-    const { width, height, wrapper } = this.state;
+    const { width, height, wrapper, resizable } = this.state;
 
     this.setState({
       wrapper: {
@@ -191,6 +191,17 @@ class Window extends React.Component<Props, State> {
         isFull: false,
         width,
         height
+      },
+      resizable: {
+        ...resizable,
+        position: {
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0
+        },
+        rightTemp: 0,
+        bottomTemp: 0
       },
       cells: []
     });
