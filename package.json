@@ -1,6 +1,6 @@
 {
   "name": "react-motion-window",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "window app using react & react-motion",
   "author": "pjb0811",
   "license": "MIT",
@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "@types/react-motion": "^0.0.27",
-    "re-resizable": "^4.8.1",
     "react-motion": "^0.5.2"
   },
   "peerDependencies": {
