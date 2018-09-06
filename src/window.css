@@ -48,6 +48,12 @@
   flex-wrap: wrap;
 }
 
+.window-wrapper .resizable li {
+  margin: 0 !important;
+  padding: 0 !important;
+  float: inherit;
+}
+
 .window-wrapper .resizable .ns {
   cursor: ns-resize;
 }
