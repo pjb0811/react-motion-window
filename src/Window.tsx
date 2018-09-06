@@ -82,7 +82,9 @@ class Window extends React.Component<Props, State> {
       mouseXY: [0, 0],
       mouseDelta: [0, 0],
       shiftXY: [0, 0],
-      position: { top: 0, left: 0, right: 0, bottom: 0 }
+      position: { top: 0, left: 0, right: 0, bottom: 0 },
+      rightTemp: 0,
+      bottomTemp: 0
     }
   };
 
@@ -334,7 +336,15 @@ class Window extends React.Component<Props, State> {
 
   resizableWindow = () => {
     const { resizable } = this.state;
-    const { shiftXY, mouseXY, mouseDelta, type, position } = resizable;
+    const {
+      shiftXY,
+      mouseXY,
+      mouseDelta,
+      type,
+      position,
+      rightTemp,
+      bottomTemp
+    } = resizable;
     const [mx, my] = mouseXY;
     const [sx, sy] = shiftXY;
     const [dx, dy] = mouseDelta;
@@ -349,7 +359,7 @@ class Window extends React.Component<Props, State> {
         resizeTop = my - sy - dy;
         break;
       case 'rightTop':
-        resizeRight = mx - sx - dx;
+        resizeRight = mx - sx - dx + rightTemp;
         resizeTop = my - sy - dy;
         break;
 
@@ -358,21 +368,21 @@ class Window extends React.Component<Props, State> {
         break;
 
       case 'right':
-        resizeRight = mx - sx - dx;
+        resizeRight = mx - sx - dx + rightTemp;
         break;
 
       case 'leftBottom':
         resizeLeft = mx - sx - dx;
-        resizeBottom = my - sy - dy;
+        resizeBottom = my - sy - dy + bottomTemp;
         break;
 
       case 'bottom':
-        resizeBottom = my - sy - dy;
+        resizeBottom = my - sy - dy + bottomTemp;
         break;
 
       case 'rightBottom':
-        resizeRight = mx - sx - dx;
-        resizeBottom = my - sy - dy;
+        resizeRight = mx - sx - dx + rightTemp;
+        resizeBottom = my - sy - dy + bottomTemp;
         break;
 
       default:
@@ -396,13 +406,15 @@ class Window extends React.Component<Props, State> {
 
   resizableMouseUp = () => {
     const { resizable } = this.state;
-    const { isPressed } = resizable;
+    const { isPressed, position } = resizable;
 
     if (isPressed) {
       this.setState({
         resizable: {
           ...resizable,
-          isPressed: false
+          isPressed: false,
+          rightTemp: position.right,
+          bottomTemp: position.bottom
         }
       });
     }

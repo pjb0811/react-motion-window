@@ -46,6 +46,7 @@
   margin: 0;
   display: flex;
   flex-wrap: wrap;
+  background: green;
 }
 
 .window-wrapper .resizable .ns {
