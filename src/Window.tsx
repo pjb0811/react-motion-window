@@ -145,8 +145,12 @@ class Window extends React.Component<Props, State> {
     });
   }
 
-  isShowWindow = () => {
+  isShowing = () => {
     return this.state.wrapper.show;
+  };
+
+  isFulling = () => {
+    return this.state.wrapper.isFull;
   };
 
   addWindow = () => {
@@ -524,6 +528,7 @@ class Window extends React.Component<Props, State> {
                           <TitleBar
                             titlebar={titlebar}
                             width={width - left}
+                            isFulling={this.isFulling}
                             toggleWindowSize={this.toggleWindowSize}
                             handleMouseDown={this.handleMouseDown}
                             removeWindow={this.removeWindow}
