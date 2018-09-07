@@ -83,8 +83,8 @@ class Window extends React.Component<Props, State> {
       mouseDelta: [0, 0],
       shiftXY: [0, 0],
       position: { top: 0, left: 0, right: 0, bottom: 0 },
-      rightTemp: 0,
-      bottomTemp: 0
+      prevMoveX: 0,
+      prevMoveY: 0
     }
   };
 
@@ -200,8 +200,8 @@ class Window extends React.Component<Props, State> {
           right: 0,
           bottom: 0
         },
-        rightTemp: 0,
-        bottomTemp: 0
+        prevMoveX: 0,
+        prevMoveY: 0
       },
       cells: []
     });
@@ -353,8 +353,8 @@ class Window extends React.Component<Props, State> {
       mouseDelta,
       type,
       position,
-      rightTemp,
-      bottomTemp
+      prevMoveX,
+      prevMoveY
     } = resizable;
     const [mx, my] = mouseXY;
     const [sx, sy] = shiftXY;
@@ -370,7 +370,7 @@ class Window extends React.Component<Props, State> {
         resizeTop = my - sy - dy;
         break;
       case 'rightTop':
-        resizeRight = mx - sx - dx + rightTemp;
+        resizeRight = mx - sx - dx + prevMoveX;
         resizeTop = my - sy - dy;
         break;
 
@@ -379,21 +379,21 @@ class Window extends React.Component<Props, State> {
         break;
 
       case 'right':
-        resizeRight = mx - sx - dx + rightTemp;
+        resizeRight = mx - sx - dx + prevMoveX;
         break;
 
       case 'leftBottom':
         resizeLeft = mx - sx - dx;
-        resizeBottom = my - sy - dy + bottomTemp;
+        resizeBottom = my - sy - dy + prevMoveY;
         break;
 
       case 'bottom':
-        resizeBottom = my - sy - dy + bottomTemp;
+        resizeBottom = my - sy - dy + prevMoveY;
         break;
 
       case 'rightBottom':
-        resizeRight = mx - sx - dx + rightTemp;
-        resizeBottom = my - sy - dy + bottomTemp;
+        resizeRight = mx - sx - dx + prevMoveX;
+        resizeBottom = my - sy - dy + prevMoveY;
         break;
 
       default:
@@ -424,8 +424,8 @@ class Window extends React.Component<Props, State> {
         resizable: {
           ...resizable,
           isPressed: false,
-          rightTemp: position.right,
-          bottomTemp: position.bottom
+          prevMoveX: -position.left + position.right,
+          prevMoveY: -position.top + position.bottom
         }
       });
     }
@@ -440,18 +440,28 @@ class Window extends React.Component<Props, State> {
         style={{
           left: spring(wrapper.isFull ? 0 : resizable.position.left),
           top: spring(wrapper.isFull ? 0 : resizable.position.top),
-          width: spring(wrapper.width + resizable.position.right),
-          height: spring(wrapper.height + resizable.position.bottom)
+          width: spring(
+            wrapper.isFull
+              ? wrapper.width
+              : wrapper.width + resizable.position.right
+          ),
+          height: spring(
+            wrapper.isFull
+              ? wrapper.height
+              : wrapper.height + resizable.position.bottom
+          ),
+          wrapperWidth: spring(wrapper.width),
+          wrapperHeight: spring(wrapper.height)
         }}
       >
-        {({ top, left, width, height }) => {
+        {({ top, left, width, height, wrapperWidth, wrapperHeight }) => {
           return (
             <div
               ref={context => (this.wrapperContext = context)}
               className={`${styles.windowWrapper} ${styles[position]}`}
               style={{
-                width: wrapper.width,
-                height: wrapper.height,
+                width: wrapperWidth,
+                height: wrapperHeight,
                 visibility: wrapper.show ? 'visible' : 'hidden'
               }}
             >
