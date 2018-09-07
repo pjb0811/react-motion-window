@@ -22,7 +22,8 @@ class TitleBar extends React.Component<Props> {
       width,
       toggleWindowSize,
       handleMouseDown,
-      removeWindow
+      removeWindow,
+      isFulling
     } = this.props;
 
     if (!titlebar.use) {
@@ -38,6 +39,7 @@ class TitleBar extends React.Component<Props> {
           toggleWindowSize={toggleWindowSize}
           handleMouseDown={handleMouseDown}
           removeWindow={removeWindow}
+          isFulling={isFulling()}
         />
       );
     }

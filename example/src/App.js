@@ -34,6 +34,10 @@ export default class App extends Component {
             use: true,
             title: 'test',
             height: 30
+            // component: props => {
+            //   console.log(props);
+            //   return <div onDoubleClick={props.toggleWindowSize}>test</div>;
+            // }
           }}
           resize={true}
         >
