@@ -66,7 +66,9 @@ class Window extends React.Component<Props, State> {
     },
     cell: {
       top: 0,
-      left: 0
+      left: 0,
+      prevTop: 0,
+      prevLeft: 0
     },
     cells: [],
     titlebar: {
@@ -151,7 +153,10 @@ class Window extends React.Component<Props, State> {
           ...prevState.wrapper,
           show: true
         },
-        cell: this.getPosition(),
+        cell: {
+          ...prevState.cell,
+          ...this.getPosition()
+        },
         cells: [
           {
             top: 0,
@@ -164,7 +169,8 @@ class Window extends React.Component<Props, State> {
 
   toggleWindowSize = () => {
     const { innerWidth, innerHeight } = window;
-    const { width, height, wrapper, cells } = this.state;
+    const { width, height, wrapper, cells, cell } = this.state;
+    const [currentCell]: Array<{ top: number; left: number }> = cells;
 
     this.setState({
       wrapper: {
@@ -173,10 +179,15 @@ class Window extends React.Component<Props, State> {
         width: wrapper.isFull ? width : innerWidth,
         height: wrapper.isFull ? height : innerHeight
       },
+      cell: {
+        ...cell,
+        prevTop: currentCell.top,
+        prevLeft: currentCell.left
+      },
       cells: cells.map(_ => {
         return {
-          top: 0,
-          left: 0
+          top: wrapper.isFull ? cell.prevTop : 0,
+          left: wrapper.isFull ? cell.prevLeft : 0
         };
       })
     });
