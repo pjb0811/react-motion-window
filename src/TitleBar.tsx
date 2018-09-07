@@ -33,6 +33,7 @@ class TitleBar extends React.Component<Props> {
         <titlebar.component
           width={width}
           height={titlebar.height}
+          title={titlebar.title}
           toggleWindowSize={toggleWindowSize}
           handleMouseDown={handleMouseDown}
           removeWindow={removeWindow}
