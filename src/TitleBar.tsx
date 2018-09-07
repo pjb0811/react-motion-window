@@ -29,7 +29,15 @@ class TitleBar extends React.Component<Props> {
     }
 
     if (titlebar.component) {
-      return <titlebar.component width={width} height={titlebar.height} />;
+      return (
+        <titlebar.component
+          width={width}
+          height={titlebar.height}
+          toggleWindowSize={toggleWindowSize}
+          handleMouseDown={handleMouseDown}
+          removeWindow={removeWindow}
+        />
+      );
     }
 
     return (
