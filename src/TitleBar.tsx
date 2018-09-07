@@ -2,7 +2,6 @@ import * as React from 'react';
 import styles from './window.css';
 
 type Props = {
-  transparent: boolean;
   titlebar: {
     use: boolean;
     title: string;
@@ -18,7 +17,6 @@ type Props = {
 class TitleBar extends React.Component<Props> {
   render() {
     const {
-      transparent,
       titlebar,
       width,
       toggleWindowSize,
@@ -26,12 +24,12 @@ class TitleBar extends React.Component<Props> {
       removeWindow
     } = this.props;
 
-    if (transparent || !titlebar.use) {
+    if (!titlebar.use) {
       return null;
     }
 
     if (titlebar.component) {
-      return <titlebar.component {...this.props} />;
+      return <titlebar.component width={width} height={titlebar.height} />;
     }
 
     return (

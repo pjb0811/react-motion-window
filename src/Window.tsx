@@ -10,7 +10,6 @@ type Props = {
   height: number;
   position: string;
   direction: string;
-  transparent: boolean;
   resize: boolean;
   titlebar: {};
 };
@@ -145,6 +144,10 @@ class Window extends React.Component<Props, State> {
       };
     });
   }
+
+  isShowWindow = () => {
+    return this.state.wrapper.show;
+  };
 
   addWindow = () => {
     this.setState(prevState => {
@@ -443,7 +446,7 @@ class Window extends React.Component<Props, State> {
   };
 
   render() {
-    const { position, children, transparent, resize = false } = this.props;
+    const { position, children, resize = false } = this.props;
     const { titlebar, wrapper, resizable } = this.state;
 
     return (
@@ -519,7 +522,6 @@ class Window extends React.Component<Props, State> {
                           }}
                         >
                           <TitleBar
-                            transparent={transparent}
                             titlebar={titlebar}
                             width={width - left}
                             toggleWindowSize={this.toggleWindowSize}
